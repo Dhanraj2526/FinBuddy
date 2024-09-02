@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinBuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100 flex flex-col h-screen">
+
+    <!-- Authentication Forms -->
+    <div id="authForms" class="flex justify-center items-center h-full">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
+            <h2 id="authTitle" class="text-3xl font-semibold text-center text-gray-100">Login</h2>
+            <form id="authForm" class="mt-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
+                    <input type="email" id="email"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-gray-100"
+                        required>
+                </div>
+                <div class="mt-4">
+                    <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
+                    <input type="password" id="password"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-gray-100"
+                        required>
+                </div>
+                <div class="mt-6">
+                    <button type="submit" id="authButton"
+                        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700">Login</button>
+                </div>
+                <p id="authSwitch" class="mt-4 text-sm text-gray-400 text-center">
+                    Don't have an account? <a href="#" id="switchToSignup"
+                        class="text-indigo-400 hover:text-indigo-300">Sign up here</a>.
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div id="chatInterface" class="hidden flex h-screen bg-gray-900 text-gray-100">
+        <aside class="w-1/4 bg-gray-800 p-6 border-r border-gray-700 shadow-lg">
+            <h2 class="text-3xl font-bold text-center mb-4">FinBuddy</h2>
+            <h3 class="mt-6 text-lg font-medium">Chats</h3>
+            <ul id="chatList" class="mt-2 space-y-2 overflow-y-auto max-h-72">
+                <!-- Previous chats will be listed here -->
+            </ul>
+            <button id="newChatBtn"
+                class="mt-auto bg-gray-700 text-gray-100 p-3 rounded-lg w-full hover:bg-gray-600 transition duration-300">New
+                chat</button>
+            <button id="logoutBtn"
+                class="absolute top-6 right-6 bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition duration-300">Logout</button>
+        </aside>
+
+        <main class="flex-1 flex flex-col">
+            <div id="chatWindow" class="flex-1 bg-gray-800 p-8 rounded-lg shadow-xl overflow-y-auto">
+                <h1 id="chatTitle" class="text-4xl font-bold">How can I help you today?</h1>
+                <p id="chatSubtitle" class="mt-2 text-gray-400">This chat will display a prompt asking for the user and
+                    their needs.</p>
+                <div id="chatContent" class="mt-6 space-y-4">
+                    <!-- Chat messages will appear here -->
+                </div>
+            </div>
+            <div class="bg-gray-700 p-6">
+                <div class="flex items-end">
+                    <input id="userInput" type="text" placeholder="Type your prompt here..."
+                        class="w-full p-3 rounded-l-lg border border-gray-600 bg-gray-800 text-gray-100 focus:outline-none focus:ring focus:ring-indigo-500 transition duration-300" />
+                    <button id="sendBtn"
+                        class="bg-indigo-600 text-white p-3 rounded-r-lg hover:bg-indigo-700 transition duration-300">Send</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Handle authentication
+        const authForms = document.getElementById('authForms');
+        const chatInterface = document.getElementById('chatInterface');
+        const authForm = document.getElementById('authForm');
+        const authButton = document.getElementById('authButton');
+        const authTitle = document.getElementById('authTitle');
+        const switchToSignup = document.getElementById('switchToSignup');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const chatList = document.getElementById('chatList');
+        const chatContent = document.getElementById('chatContent');
+        const newChatBtn = document.getElementById('newChatBtn');
+
+        // Check if user is logged in
+        function checkLoginStatus() {
+            if (localStorage.getItem('userEmail')) {
+                authForms.classList.add('hidden');
+                chatInterface.classList.remove('hidden');
+            } else {
+                authForms.classList.remove('hidden');
+                chatInterface.classList.add('hidden');
+            }
+        }
+
+        // Handle login and signup switch
+        switchToSignup.addEventListener('click', () => {
+            if (authTitle.textContent === 'Login') {
+                authTitle.textContent = 'Sign Up';
+                authButton.textContent = 'Sign Up';
+                switchToSignup.textContent = 'Already have an account? Login here';
+            } else {
+                authTitle.textContent = 'Login';
+                authButton.textContent = 'Login';
+                switchToSignup.textContent = 'Don\'t have an account? Sign up here';
+            }
+        });
+
+        // Handle form submission
+        authForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (authTitle.textContent === 'Sign Up') {
+                // Store email and password
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userPassword', password);
+                alert('Signup successful! Please login.');
+                authTitle.textContent = 'Login';
+                authButton.textContent = 'Login';
+                switchToSignup.textContent = 'Don\'t have an account? Sign up here';
+            } else {
+                // Simulate authentication
+                if (email === localStorage.getItem('userEmail') && password === localStorage.getItem('userPassword')) {
+                    authForms.classList.add('hidden');
+                    chatInterface.classList.remove('hidden');
+                } else {
+                    alert('Invalid email or password.');
+                }
+            }
+        });
+
+        // Handle logout
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userPassword');
+            authForms.classList.remove('hidden');
+            chatInterface.classList.add('hidden');
+        });
+
+        // Handle chat functionality
+        function addMessage(message, isUser = false) {
+            const messageElem = document.createElement('div');
+            messageElem.className = `bg-gray-700 p-4 rounded-lg ${isUser ? 'text-gray-100 bg-gray-800' : 'text-gray-100 bg-gray-600'}`;
+            messageElem.textContent = message;
+            chatContent.appendChild(messageElem);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function saveChat(message) {
+            const chatItem = document.createElement('li');
+            chatItem.className = 'py-2 hover:bg-gray-600 rounded-lg transition cursor-pointer';
+            chatItem.textContent = message;
+            chatItem.addEventListener('click', () => displayChatHistory(chatHistories[chatItem.dataset.index]));
+            chatItem.dataset.index = chatHistories.length;
+            chatList.appendChild(chatItem);
+
+            chatHistories.push([...chatContent.children].map(child => child.textContent));
+        }
+
+        function displayChatHistory(chatHistory) {
+            chatContent.innerHTML = '';
+            chatHistory.forEach(message => addMessage(message, message.startsWith('User:')));
+        }
+
+        function handleSendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                addMessage(`User: ${message}`, true);
+                saveChat(message);
+                userInput.value = '';
+                setTimeout(() => {
+                    addMessage("FinBuddy: Sure! Let me provide you with some options.", false);
+                }, 1000);
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSendMessage);
+        userInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                handleSendMessage();
+            }
+        });
+
+        newChatBtn.addEventListener('click', () => {
+            chatContent.innerHTML = '';
+            chatTitle.textContent = "How can I help you today?";
+            chatSubtitle.textContent = "This chat will display a prompt asking for the user and their needs.";
+        });
+
+        const chatHistories = [];
+        newChatBtn.addEventListener('click', () => {
+            chatContent.innerHTML = '';
+        });
+
+        // Initialize page state
+        checkLoginStatus();
+    </script>
+</body>
+</html>
