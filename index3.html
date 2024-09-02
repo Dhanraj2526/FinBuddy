@@ -99,8 +99,7 @@
   </style>
 </head>
 <body>
- <form class="header class="mb-4>
-  <h1 class="text-3xl font-bold finbuddy-text">FinBuddy</h1></form>
+
   <div id="authForms" class="flex justify-center items-center h-full">
     <div class="form-container w-full max-w-md">
       <div class="form-header">
@@ -123,7 +122,7 @@
         </div>
         
         <div class="form-button">
-            <button type="submit" id="authButton" class="form-button">Login</button>
+            <button type="submit" id="authButton" class="form-button" href="chat2.html">Login</button>
           </div>
           <div class="form-switch">
             <p id="authSwitch" class="text-sm text-gray-400">Don't have an account? <a href="#" id="switchToSignup" class="text-indigo-400 hover:text-indigo-300">Sign up here</a>.</p>
@@ -206,7 +205,7 @@
                 if (email === localStorage.getItem('userEmail') && password === localStorage.getItem('userPassword')) {
                     // Open chat interface in a new window
    
-                    window.location.href = 'chat2.html';
+                    window.location.href = 'FinBuddy (3).html';
                 } else {
                     alert('Invalid email or password.');
                 }
